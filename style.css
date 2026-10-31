@@ -11,3 +11,22 @@ html,body{width:100%;min-width:0}main{width:100%;min-width:0}.panel,#screen,#con
 
 /* Keep taps and scrolling without pinch/double-tap page zoom. */
 html,body{touch-action:pan-x pan-y;}
+
+/* Brand gear: original artwork presented as three CSS windows, no external libraries. */
+.gear-loader{isolation:isolate;position:relative;overflow:hidden;min-width:0;border:1px solid #2d2c32;border-radius:18px;background:#0b0b0e;padding:14px 16px 26px;text-align:center;contain:layout paint}
+.gear-stage{position:relative;height:230px;max-width:340px;margin:0 auto;perspective:800px}
+.gear-halo{position:absolute;inset:24% 3% 0;background:radial-gradient(ellipse,rgba(237,48,58,.23),transparent 65%);animation:gear-breathe 3s ease-in-out infinite}
+.gear-item{position:absolute;inset:15px 8px 5px;background-image:url('./gear.png');background-repeat:no-repeat;mix-blend-mode:screen;opacity:0;will-change:transform,opacity;animation:gear-cycle 9s ease-in-out infinite;filter:drop-shadow(0 12px 18px #000)}
+.gear-shoe{background-size:280% auto;background-position:0% 55%;animation-delay:0s}
+.gear-belt{background-size:310% auto;background-position:52% 55%;animation-delay:-6s}
+.gear-sleeves{background-size:310% auto;background-position:100% 55%;animation-delay:-3s}
+.gear-floor{position:absolute;bottom:3px;left:16%;right:16%;height:1px;background:linear-gradient(90deg,transparent,#ef3843,transparent);box-shadow:0 0 20px #e52b3755}
+.gear-caption{display:flex;align-items:center;flex-direction:column;gap:10px;margin-top:20px}
+.gear-eyebrow{font-size:9px;letter-spacing:3px;color:#ff858e;font-weight:700}.gear-caption b{font-size:21px;letter-spacing:-.4px}.gear-caption small{font-size:11px;color:#9e9ca8}
+.gear-track{display:block;width:100px;height:3px;overflow:hidden;border-radius:10px;background:#31252a;margin:5px 0}.gear-track i{display:block;height:100%;width:38%;border-radius:10px;background:#f33845;animation:gear-scan 1.8s ease-in-out infinite}
+@keyframes gear-cycle{0%{opacity:0;transform:translateY(12px) scale(.94) rotate(-3deg)}7%,25%{opacity:1;transform:translateY(-4px) scale(1) rotate(0)}33%,100%{opacity:0;transform:translateY(-12px) scale(1.025) rotate(2deg)}}
+@keyframes gear-breathe{50%{opacity:.5;transform:scale(.88)}}@keyframes gear-scan{0%{transform:translateX(-110%)}100%{transform:translateX(365%)}}
+@media(max-width:360px){.gear-stage{height:205px}.gear-caption b{font-size:19px}}
+@media(prefers-reduced-motion:reduce){.gear-item{animation:none;will-change:auto}.gear-shoe{opacity:1;transform:none}.gear-halo,.gear-track i{animation:none}}
+.gear-belt{background-position:55% 55%}
+.gear-sleeves{width:210px;left:calc(50% - 105px);right:auto}
