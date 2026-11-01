@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="referrer" content="no-referrer"><title>Мой тренировочный план · Telegram TEST</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>html,body{margin:0;height:100%;background:#f7f6f2;font:16px system-ui;color:#252821}iframe{position:fixed;inset:0;border:0;width:100%;height:100%;height:100dvh}#message{position:relative;z-index:2;background:#f7f6f2;padding:32px;max-width:440px;margin:20vh auto;line-height:1.6}a{color:inherit}</style></head><body><div id="message" role="status">Подключаем тренировочный план…</div>
+<script>
+(function(){
+'use strict';
+var app=window.Telegram&&Telegram.WebApp,message=document.getElementById('message');
+var webUrl='https://script.google.com/macros/s/AKfycbxGLhOpkeMDbdciCE7zzvYMeqnmoJycJsxNx343IYceqxKkFbbSxEHWTzGSwCfJcIYOrw/exec';
+if(!app||!app.initData){message.innerHTML='Откройте мини-приложение через <a href="https://t.me/CK_GUDRON_bot">@CK_GUDRON_bot</a>.<br><br>Или используйте <a href="'+webUrl+'" target="_blank" rel="noopener">TEST в браузере</a>.';return;}
+app.ready();app.expand();
+var bytes=new Uint8Array(32);crypto.getRandomValues(bytes);var bridge=Array.from(bytes,function(b){return b.toString(16).padStart(2,'0');}).join('');
+var frame=document.createElement('iframe');frame.title='Тренировочный план · TEST';frame.referrerPolicy='no-referrer';frame.src=webUrl+'?channel=telegram&bridge='+bridge;
+var timer=setTimeout(function(){message.textContent='Google отвечает дольше обычного. Закройте окно и попробуйте снова.';},45000);
+window.addEventListener('message',function(e){
+  if(!e.data||e.data.type!=='gudron-tg-ready120'||e.data.bridge!==bridge||!/^https:\/\/(?:[a-z0-9-]+-)?script\.googleusercontent\.com$/.test(e.origin)||!e.source)return;
+  clearTimeout(timer);e.source.postMessage({type:'gudron-tg-init120',bridge:bridge,initData:app.initData},e.origin);message.hidden=true;
+});
+document.body.appendChild(frame);
+})();
+</script></body></html>
