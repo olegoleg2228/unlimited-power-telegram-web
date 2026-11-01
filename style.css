@@ -30,3 +30,5 @@ html,body{touch-action:pan-x pan-y;}
 @media(prefers-reduced-motion:reduce){.gear-item{animation:none;will-change:auto}.gear-shoe{opacity:1;transform:none}.gear-halo,.gear-track i{animation:none}}
 .gear-belt{background-position:55% 55%}
 .gear-sleeves{width:210px;left:calc(50% - 105px);right:auto}
+
+.public-socials{margin-top:12px;padding:16px}.public-socials h2{font-size:15px;margin:0 0 12px}.social-links{display:flex;flex-wrap:wrap;gap:8px}.social-link{display:inline-flex;align-items:center;gap:7px;border:1px solid #3a3b45;border-radius:9px;padding:9px 11px;color:#f3f3f5;text-decoration:none;font-size:12px;background:#24262e}.social-link .brand-icon{width:18px;height:18px;flex-basis:18px}.social-link .brand-icon img{width:18px;height:18px}.social-link:focus-visible{outline:2px solid #ff6873;outline-offset:3px}
