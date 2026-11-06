@@ -55,3 +55,5 @@ html,body{touch-action:pan-x pan-y;}
 .equipment-owned{background:#252830;border-color:#3a3e49}#profile-review-cards{display:grid;gap:10px;margin-bottom:10px}#profile-review-cards>.panel{margin:0}.equipment-row>span{flex:1}.equipment-row small{max-width:110px;text-align:right}
 
 .equipment-wish-row{align-items:flex-start;margin-top:6px}.equipment-wish-actions{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}.equipment-wish-actions button{font-size:10px;padding:7px 8px}.equipment-site{font-size:10px;white-space:nowrap}.equipment-wish-row>span{font-size:12px}
+
+.equipment-wish-grid{margin-top:10px}.equipment-wish-grid .shop-product-actions{align-items:stretch}.equipment-wish-grid button{white-space:normal;min-height:34px;display:flex;align-items:center;justify-content:center;gap:6px}.equipment-wishes [data-wish-error]:empty{display:none}
