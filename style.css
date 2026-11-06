@@ -53,3 +53,5 @@ html,body{touch-action:pan-x pan-y;}
 .own-recommendations .section-heading{gap:8px}.own-recommendations h2{margin:0}.own-recommendations select{width:auto;max-width:160px;margin:0;padding:6px 8px;font-size:12px}.recommendation-row{border-top:1px solid #30333d;padding:9px 0}.recommendation-row:first-of-type{margin-top:8px}.recommendation-row>b{display:flex;align-items:center;gap:6px;font-size:12px}.recommendation-row .brand-icon{width:18px;height:18px}.recommendation-row p{margin:5px 0 0;font-size:13px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
 
 .equipment-owned{background:#252830;border-color:#3a3e49}#profile-review-cards{display:grid;gap:10px;margin-bottom:10px}#profile-review-cards>.panel{margin:0}.equipment-row>span{flex:1}.equipment-row small{max-width:110px;text-align:right}
+
+.equipment-wish-row{align-items:flex-start;margin-top:6px}.equipment-wish-actions{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}.equipment-wish-actions button{font-size:10px;padding:7px 8px}.equipment-site{font-size:10px;white-space:nowrap}.equipment-wish-row>span{font-size:12px}
