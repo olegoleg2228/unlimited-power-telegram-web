@@ -193,9 +193,9 @@ async function loadProfileReviewCards(){
  const root=$('profile-review-cards');if(!root)return;
  const render=data=>{if(!root.isConnected)return;const current=stats?.month||new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Yekaterinburg',year:'numeric',month:'2-digit'}).format(new Date());let month=data.reviews.some(r=>r.month===current&&r.recommendation)?current:data.reviews.filter(r=>r.recommendation).map(r=>r.month).sort().reverse()[0]||current;
  const draw=()=>{if(!root.isConnected)return;root.innerHTML=compactEquipmentMarkup(data.equipment,current,false)+ownRecommendationsMarkup(data,month);wireReviewBlock(root,data,current,'',false,next=>{ownReviewCache=next;data=next;draw();});const select=root.querySelector('#profile-recommendation-month');if(select)select.onchange=e=>{month=e.target.value;draw();};};draw();};
- if(ownReviewCache){render(ownReviewCache);return;}
+ if(validEquipmentReview(ownReviewCache)){render(ownReviewCache);return;}ownReviewCache=null;
  root.innerHTML='<section class="panel"><h2>Моя экипировка</h2><p class="small-note" role="status">Загружаем экипировку и рекомендации…</p></section>';
- try{if(!ownReviewPromise)ownReviewPromise=preview?Promise.resolve({reviews:[{month:'2026-10',platform:'Instagram',recommendation:'Добавь больше видео с тренировок.'}],equipment:{initial:'Штангетки UP Olymp',sent:[],items:[],decisions:[],wishProducts:[]}}):api('/api/review/own');ownReviewCache=await ownReviewPromise;render(ownReviewCache);}catch(e){if(root.isConnected){root.innerHTML='<section class="panel"><h2>Моя экипировка</h2><p>'+esc(e.message)+'</p><button class="secondary compact-level" id="retry-profile-review">Повторить</button></section>';root.querySelector('#retry-profile-review').onclick=loadProfileReviewCards;}}finally{ownReviewPromise=null;}
+ try{if(!ownReviewPromise)ownReviewPromise=preview?Promise.resolve({reviews:[{month:'2026-10',platform:'Instagram',recommendation:'Добавь больше видео с тренировок.'}],equipment:{initial:'Штангетки UP Olymp',sent:[],items:[],decisions:[],wishProducts:[]}}):api('/api/review/own');const result=await ownReviewPromise;if(!validEquipmentReview(result))throw Error('Не удалось получить экипировку. Нажми «Повторить».');ownReviewCache=result;render(ownReviewCache);}catch(e){if(root.isConnected){root.innerHTML='<section class="panel"><h2>Моя экипировка</h2><p>'+esc(e.message)+'</p><button class="secondary compact-level" id="retry-profile-review">Повторить</button></section>';root.querySelector('#retry-profile-review').onclick=loadProfileReviewCards;}}finally{ownReviewPromise=null;}
 }
 
 async function selectEquipmentInline(root,data,id,productId,onUpdated,catalogProduct){
@@ -209,7 +209,7 @@ async function selectEquipmentInline(root,data,id,productId,onUpdated,catalogPro
 }
 
 let equipmentCatalogCache=null;
-async function equipmentCatalog(){if(!equipmentCatalogCache)equipmentCatalogCache=await api('/api/review/catalog');return equipmentCatalogCache.items;}
+async function equipmentCatalog(){if(!Array.isArray(equipmentCatalogCache?.items)){const result=await api('/api/review/catalog');if(!Array.isArray(result?.items))throw Error('Не удалось получить каталог. Нажми «Повторить».');equipmentCatalogCache=result;}return equipmentCatalogCache.items;}
 function equipmentCatalogCard(p,controls){return `<article class="shop-product"><a class="shop-image-link" href="${esc(p.url)}" target="_blank" rel="noopener noreferrer"><img src="${esc(p.image)}" alt="${esc(p.title)}" loading="lazy" referrerpolicy="no-referrer"></a><h2>${esc(p.title)}</h2>${controls}</article>`;}
 function equipmentFilters(){return '<label for="gear-search">Название или модель</label><input id="gear-search" type="search" placeholder="Например, штангетки"><label for="gear-category">Категория</label><select id="gear-category"></select><p id="gear-summary" class="small-note" role="status"></p>';}
 function setupEquipmentFilters(root,items,render){const category=root.querySelector('#gear-category');category.innerHTML=['Все',...new Set(items.flatMap(p=>p.categories||[]))].map(c=>`<option>${esc(c)}</option>`).join('');root.querySelector('#gear-search').oninput=render;category.onchange=render;}
@@ -225,7 +225,7 @@ async function equipmentCatalogDialog(root,data,id,onUpdated){
 }
 async function showEquipmentScreen(){
  if(!profile)return form();shell('equipment');const content=$('content');content.innerHTML='<section class="panel"><h1>Моя экипировка</h1><p role="status">Загружаем каталог…</p></section>';
- try{const [items,data]=await Promise.all([equipmentCatalog(),ownReviewCache?Promise.resolve(ownReviewCache):api('/api/review/own')]);if(currentTab!=='equipment')return;ownReviewCache=data;
+ try{const data=await readOwnEquipment();if(currentTab!=='equipment')return;const items=await equipmentCatalog();if(currentTab!=='equipment')return;
  const counts=new Map();for(const r of data.equipment.items||[])if(r.state==='owned'&&r.productId)counts.set(r.productId,(counts.get(r.productId)||0)+(r.quantity||1));const original=new Map(counts);let saving=false,requestId=reviewRequestId();
  content.innerHTML=`<section class="panel shop-toolbar"><div class="section-heading"><h1>Моя экипировка</h1><button id="gear-back" class="secondary compact-level">← Мой профиль</button></div><p class="small-note">Отметь то, что у тебя уже есть. «+» и «−» меняют количество. Пожелания и экипировка от команды учитываются отдельно.</p>${equipmentFilters()}</section><div id="gear-options" class="shop-grid"></div><div class="equipment-save-bar"><p id="gear-feedback" role="status"></p><button id="gear-save" disabled>Сохранить экипировку</button></div>`;
  const changes=()=>items.filter(p=>(counts.get(p.id)||0)!==(original.get(p.id)||0)).map(p=>({productId:p.id,quantity:counts.get(p.id)||0}));
@@ -233,11 +233,23 @@ async function showEquipmentScreen(){
  content.querySelector('#gear-options').innerHTML=found.map(p=>{const n=counts.get(p.id)||0;return equipmentCatalogCard(p,`<div class="equipment-quantity" aria-label="Количество: ${esc(p.title)}"><button class="secondary" data-count-id="${esc(p.id)}" data-step="-1" aria-label="Уменьшить количество ${esc(p.title)}" ${!n||saving?'disabled':''}>−</button><output>${n}</output><button class="secondary" data-count-id="${esc(p.id)}" data-step="1" aria-label="Увеличить количество ${esc(p.title)}" ${n>=99||saving?'disabled':''}>+</button></div>`);}).join('')||'<p>Ничего не найдено.</p>';
  content.querySelectorAll('[data-count-id]').forEach(b=>b.onclick=()=>{if(saving)return;counts.set(b.dataset.countId,Math.max(0,Math.min(99,(counts.get(b.dataset.countId)||0)+Number(b.dataset.step))));requestId=reviewRequestId();content.querySelector('#gear-feedback').textContent='Есть несохранённые изменения.';render();});content.querySelector('#gear-save').disabled=saving||!changes().length;};
  setupEquipmentFilters(content,items,render);content.querySelector('#gear-back').onclick=()=>{if(changes().length&&!confirm('Изменения не сохранены. Вернуться в профиль?'))return;card();};
- content.querySelector('#gear-save').onclick=async()=>{if(saving||!changes().length)return;saving=true;render();const button=content.querySelector('#gear-save');button.textContent='Сохраняем…';try{const next=await api('/api/review/counts','POST',{changes:changes(),requestId});ownReviewCache=next;for(const [id,n]of counts)original.set(id,n);content.querySelector('#gear-feedback').textContent='Экипировка сохранена ✓';}catch(e){content.querySelector('#gear-feedback').textContent='Не удалось сохранить. '+e.message;}finally{saving=false;button.textContent='Сохранить экипировку';render();}};render();
+ content.querySelector('#gear-save').onclick=async()=>{if(saving||!changes().length)return;saving=true;render();const button=content.querySelector('#gear-save');button.textContent='Сохраняем…';try{const next=await api('/api/review/counts','POST',{changes:changes(),requestId});if(!validEquipmentReview(next))throw Error('Не удалось подтвердить сохранение. Открой профиль и проверь экипировку.');ownReviewCache=next;for(const [id,n]of counts)original.set(id,n);content.querySelector('#gear-feedback').textContent='Экипировка сохранена ✓';}catch(e){content.querySelector('#gear-feedback').textContent='Не удалось сохранить. '+e.message;}finally{saving=false;button.textContent='Сохранить экипировку';render();}};render();
  }catch(e){if(currentTab==='equipment')content.innerHTML='<section class="panel"><h1>Моя экипировка</h1><p>'+esc(e.message)+'</p><button id="gear-retry" class="secondary">Повторить</button></section>';if($('gear-retry'))$('gear-retry').onclick=showEquipmentScreen;}
 }
 function equipmentInvitation(){
  if(!isOwner)return;const link='https://t.me/unlimited_power_team_bot?startapp=equipment',d=dialogShell('Заполнение экипировки',`<p>Чат: <b>UP | КОМАНДА</b></p><p>Сообщение попросит спортсменов указать уже имеющуюся экипировку. Кнопка откроет каталог с количеством.</p><input id="equipment-invite-link" readonly aria-label="Ссылка для заполнения экипировки" value="${link}"><div class="actions"><button class="secondary" id="equipment-copy">Скопировать ссылку</button><button id="equipment-send">Отправить в чат</button></div><p id="equipment-invite-status" role="status"></p>`),requestId=reviewRequestId();
  d.querySelector('#equipment-copy').onclick=async()=>{try{await navigator.clipboard.writeText(link);d.querySelector('#equipment-invite-status').textContent='Ссылка скопирована.';}catch(e){const input=d.querySelector('input');input.focus();input.select();d.querySelector('#equipment-invite-status').textContent='Скопируй выделенную ссылку.';}};
  d.querySelector('#equipment-send').onclick=async()=>{if(!confirm('Отправить приглашение заполнить экипировку в чат UP | КОМАНДА?'))return;const b=d.querySelector('#equipment-send');b.disabled=true;b.textContent='Отправляем…';try{const result=await api('/api/review/invite','POST',{requestId});d.querySelector('#equipment-invite-status').textContent=result.sent?'Сообщение отправлено в чат.':'Не удалось подтвердить доставку. Проверь чат перед повторной отправкой.';b.textContent=result.sent?'Отправлено ✓':'Проверь чат';}catch(e){d.querySelector('.dialog-error').textContent=e.message;b.textContent='Повторить';b.disabled=false;}};
+}
+
+function validEquipmentReview(data){return !!data&&Array.isArray(data.reviews)&&!!data.equipment&&Array.isArray(data.equipment.items)&&Array.isArray(data.equipment.sent)&&Array.isArray(data.equipment.decisions);}
+async function readOwnEquipment(){
+ if(validEquipmentReview(ownReviewCache))return ownReviewCache;
+ ownReviewCache=null;
+ // Retry only this read when a successful HTTP response has the wrong payload. Never retry a write.
+ for(let attempt=0;attempt<2;attempt++){
+  const result=await api('/api/review/own');
+  if(validEquipmentReview(result)){ownReviewCache=result;return result;}
+ }
+ throw Error('Не удалось получить экипировку. Нажми «Повторить».');
 }
