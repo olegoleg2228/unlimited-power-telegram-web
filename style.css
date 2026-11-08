@@ -65,3 +65,14 @@ html,body{touch-action:pan-x pan-y;}
 .shipping-card{padding:14px;margin:12px 0}.shipping-card h2{font-size:17px;margin:0 0 9px}.shipping-card p{margin:7px 0;overflow-wrap:anywhere}.shipping-card table{width:100%;border-collapse:collapse;font-size:14px}.shipping-card td{border-top:1px solid #343740;padding:8px 0}.shipping-card td:last-child{width:62px;text-align:right;white-space:nowrap}.shipping-missing{color:#efbd65}body.shipping-screenshot .tabs,body.shipping-screenshot header,body.shipping-screenshot footer,body.shipping-screenshot .shipping-controls>*:not(.actions){display:none}body.shipping-screenshot .shipping-controls{padding:5px;border:0}body.shipping-screenshot .shipping-controls .actions>*:not(#shipping-shot){display:none}body.shipping-screenshot .shipping-card{border-radius:4px}
 
 .shipping-list .shipping-card{background:#fff;color:#20242a;border:1px solid #bec4cc;border-radius:14px;overflow:hidden;padding:0;margin:14px 0;break-inside:avoid}.shipping-card table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:14px;color:#20242a}.shipping-card th,.shipping-card td{padding:11px 9px;text-align:center!important;vertical-align:middle;border:1px solid #c7ccd3;overflow-wrap:anywhere;line-height:1.45}.shipping-card th{font-size:16px;font-weight:700;background:#fff}.shipping-card td:last-child{width:auto;white-space:normal}.shipping-card td:not([colspan]):last-child{width:65px;white-space:nowrap}.shipping-card .shipping-missing{color:#936016;background:#fff9ed}body.shipping-screenshot .shipping-card{border-radius:14px}
+
+/* Compact shipping contacts; only equipment rows retain the grid. */
+.shipping-card th,.shipping-card td{padding:6px 8px;line-height:1.3}
+.shipping-card th[colspan],.shipping-card td[colspan]{border:0;padding:4px 8px}
+.shipping-card tr:first-child th{padding-top:9px}
+.shipping-card tr:nth-child(3) td{padding-bottom:9px}
+.shipping-edit input,.shipping-edit textarea{box-sizing:border-box;width:100%;margin:0;padding:7px 5px;min-height:34px;background:#f5f6f8;color:#20242a;border:1px solid #c7ccd3;border-radius:5px;text-align:center;font-size:14px}
+.shipping-edit textarea{resize:vertical;min-height:52px}
+.shipping-edit input::placeholder,.shipping-edit textarea::placeholder{color:#656b73}
+.shipping-edit a{color:#215da2}
+.shipping-edit td:not([colspan]):last-child{width:100px;white-space:normal}
