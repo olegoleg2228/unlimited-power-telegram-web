@@ -93,3 +93,5 @@ body.shipping-screenshot .shipment-item-remove{display:none!important}.shipment-
 .shipment-hide{position:absolute;left:0;top:0;bottom:0;width:76px;padding:0;border-radius:0;font-size:13px;background:#59616a;color:#fff}
 body.shipping-screenshot .shipment-swipe .shipping-card{transform:none}
 body.shipping-screenshot .shipment-hide,body.shipping-screenshot .shipment-plane{visibility:hidden}
+
+.shipment-swipe{touch-action:pan-y pinch-zoom}
