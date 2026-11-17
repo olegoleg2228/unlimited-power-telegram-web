@@ -88,3 +88,8 @@ html,body{touch-action:pan-x pan-y;}
 .shipment-item-remove{float:right;padding:0 5px;margin-left:5px;background:transparent;color:#9b3030;font-size:19px;line-height:20px}
 
 body.shipping-screenshot .shipment-item-remove{display:none!important}.shipment-swipe th,.shipment-swipe td{touch-action:manipulation}
+
+.shipment-swipe.is-hide-open .shipping-card{transform:translateX(76px)}
+.shipment-hide{position:absolute;left:0;top:0;bottom:0;width:76px;padding:0;border-radius:0;font-size:13px;background:#59616a;color:#fff}
+body.shipping-screenshot .shipment-swipe .shipping-card{transform:none}
+body.shipping-screenshot .shipment-hide,body.shipping-screenshot .shipment-plane{visibility:hidden}
