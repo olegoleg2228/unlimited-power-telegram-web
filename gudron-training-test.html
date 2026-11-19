@@ -13,6 +13,8 @@ if(new URLSearchParams(location.search).get('preview')==='loader')return;
 var webUrl='https://script.google.com/macros/s/AKfycbxGLhOpkeMDbdciCE7zzvYMeqnmoJycJsxNx343IYceqxKkFbbSxEHWTzGSwCfJcIYOrw/exec';
 if(!app||!app.initData){message.innerHTML='<div class="fallback">Откройте мини-приложение через <a href="https://t.me/CK_GUDRON_bot/trainingtest">@CK_GUDRON_bot</a>.<br><br>Или используйте <a href="'+webUrl+'" target="_blank" rel="noopener">TEST в браузере</a>.</div>';return;}
 app.ready();app.expand();
+function lockPortrait(){try{if(window.matchMedia('(orientation: portrait)').matches&&typeof app.lockOrientation==='function'&&app.isVersionAtLeast('8.0'))app.lockOrientation();}catch(ignore){}}
+lockPortrait();window.addEventListener('resize',lockPortrait);app.onEvent('viewportChanged',lockPortrait);
 var bytes=new Uint8Array(32);crypto.getRandomValues(bytes);var bridge=Array.from(bytes,function(b){return b.toString(16).padStart(2,'0');}).join('');
 var frame=document.createElement('iframe');frame.title='Тренировочный план · TEST';frame.referrerPolicy='no-referrer';frame.src=webUrl+'?channel=telegram&bridge='+bridge;
 var peer=null;
